@@ -1,5 +1,38 @@
 
 
+<style>
+    div.ballClass {
+      -moz-border-radius: 50px;
+      border-radius: 50px;
+      margin-left: auto ;
+      margin-right: auto ;
+      padding: 6px;
+      background-color: rgba(0, 25, 255, 0.5);
+      width: 50px;
+      height: 50px;
+    }
+</style>
+
+<div data-role="page">
+ 
+    <div data-role="header">
+        <h1>Mobile Events</h1>
+    </div><!-- /header -->
+ 
+    <div data-role="content">
+    <!---- BUTTON ---->
+            <div><p>Swipe Right, Swipe Left or Tap and Hold on the ball to trigger event.</p></div>
+            <div class="ballClass" id="ball"></div>
+            <div id="whichEvent"><p>Event Triggered: None Yet!</p></div>
+    </div><!-- /content -->
+ 
+    <div data-role="footer">
+        <h4></h4>
+    </div><!-- /footer -->
+</div><!-- /page -->
+
+<!--
+
 <div data-role="page" id="home">
  
   <div data-role="header">
@@ -27,7 +60,7 @@
  
 </div>
 
-
+-->
 
   <link rel="stylesheet" type="text/css" href="css/main.css" />
   <link rel="stylesheet" type="text/css" href="css/theme.css" />
