@@ -35,6 +35,26 @@ $(function() {
              alert('button clicked');
            }
       );
+
+          // SWIPE LEFT EVENT
+    // Triggers when a swipe event occurred moving in the left direction.
+    // Triggers when a horizontal drag of 30px or more (and less than 20px vertically) occurs within 1 second duration.
+    // A standard 'swipe' can be used to trigger event regardless of direction
+    $("#ball").bind('swipeleft',function(event, ui){
+        $("#whichEvent p").replaceWith("<p>Event Triggered: Slide Left</p>");
+    })
+    // SWIPE RIGHT EVENT
+    // Triggers when a swipe event occurred moving in the right direction.
+    $("#ball").bind('swiperight',function(event, ui){
+        $("#whichEvent p").replaceWith("<p>Event Triggered: Slide Right</p>");
+    })
+    // TAP HOLD
+    // Triggers after a held complete touch event (close to one second).
+    // A standard 'tap' event is also avliable that triggers after a quick complete touch event.
+    $("#ball").bind('taphold',function(event, ui){
+        $("#whichEvent p").replaceWith("<p>Event Triggered: Tap Hold</p>");
+    })
+
 });
 
 </script>
@@ -50,9 +70,6 @@ $(function() {
             <div><p>Swipe Right, Swipe Left or Tap and Hold on the ball to trigger event.</p></div>
             <div class="ballClass" id="ball"></div>
             <div id="whichEvent"><p>Event Triggered: None Yet!</p></div>
-
-
-	    <a href="http://m.yahoo.com/" onClick="alert('Hello out there!')">click me</a>
     </div><!-- /content -->
  
     <div data-role="footer">
