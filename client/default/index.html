@@ -29,6 +29,16 @@
 
 <script type="text/javascript">
 
+function changePage(var incr) {
+    alert("start : " + $(this).attr("id"));
+    p = parseInt($(this).attr("id")) + incr;   // this is the page num
+    if ($("#" + p).length > 0) { // page exists
+       alert("change page : " + p); 
+       $.mobile.changePage("#"+p); 
+    }
+}
+
+
 $(function() {
 
 
@@ -37,24 +47,18 @@ $(function() {
     // Triggers when a horizontal drag of 30px or more (and less than 20px vertically) occurs within 1 second duration.
     // A standard 'swipe' can be used to trigger event regardless of direction
     $(".page").bind('swipeleft',function(event, ui){
-        alert("left " + $(this).attr("id"));
-        p = parseInt($(this).attr("id")) + 1;   // this is the page num, must be int
-        if ($("#" + p).length > 0) { // page exists
-          $.mobile.changePage("#"+p); 
-        }
+        changePage(-1);
     })
     // SWIPE RIGHT EVENT
     // Triggers when a swipe event occurred moving in the right direction.
     $(".page").bind('swiperight',function(event, ui){
-        alert("right " + $(this).attr("id"));
-
+        changePage(-1);
     })
     // TAP HOLD
     // Triggers after a held complete touch event (close to one second).
     // A standard 'tap' event is also avliable that triggers after a quick complete touch event.
     $(".page").bind('taphold',function(event, ui){
-        alert("hold " + $(this).attr("id"));
-
+        changePage(0);
     })
 
 });
