@@ -2,9 +2,9 @@
   <link rel="stylesheet" type="text/css" href="css/theme.css" />
   
   <meta name="viewport" content="width=device-width, initial-scale=1"> 
-  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.css" />
-  <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
-  <script src="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.js">
+  <link rel="stylesheet" href="css/jquery.mobile-1.0.1.css" />
+  <script src="lib/jquery-1.6.4.min.js"></script>
+  <script src="libjquery.mobile-1.0.1.js">
 
   <script type="text/javascript" src="config.js"></script>
   <script type="text/javascript" src="js/prefs.js"></script>
@@ -30,6 +30,10 @@
 <script type="text/javascript">
 
 $(function() {
+
+    $(".page").click(function(event){
+         alert("hi mom");
+    })
 
     // SWIPE LEFT EVENT
     // Triggers when a swipe event occurred moving in the left direction.
