@@ -38,20 +38,22 @@ $(function() {
     // A standard 'swipe' can be used to trigger event regardless of direction
     $(".page").bind('swipeleft',function(event, ui){
         alert("left " + $(this).attr("id"));
-     
-
+        p = parseInt($(this).attr("id")) + 1;   // this is the page num, must be int
+        if ($("#" + p).length > 0) { // page exists
+          $.mobile.changePage("#"+p); 
+        }
     })
     // SWIPE RIGHT EVENT
     // Triggers when a swipe event occurred moving in the right direction.
     $(".page").bind('swiperight',function(event, ui){
-        alert("right");
+        alert("right " + $(this).attr("id"));
 
     })
     // TAP HOLD
     // Triggers after a held complete touch event (close to one second).
     // A standard 'tap' event is also avliable that triggers after a quick complete touch event.
     $(".page").bind('taphold',function(event, ui){
-        alert("hold");
+        alert("hold " + $(this).attr("id"));
 
     })
 
