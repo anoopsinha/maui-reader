@@ -17,7 +17,7 @@
 function changePage(pageN, incr) {
     p = parseInt(pageN.substring(4)) + incr;   // format: page###
     if ($("#page" + p).length > 0) { // page exists
-       transitionType = (incr < 0);
+       transitionType = (incr > 0);
        $.mobile.changePage("#page"+p, { transition: "slide", reverse: transitionType}); 
     }
 }
