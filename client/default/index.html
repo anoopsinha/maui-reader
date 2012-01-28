@@ -35,19 +35,19 @@ $(function() {
     // Triggers when a swipe event occurred moving in the left direction.
     // Triggers when a horizontal drag of 30px or more (and less than 20px vertically) occurs within 1 second duration.
     // A standard 'swipe' can be used to trigger event regardless of direction
-    $("#page").bind('swipeleft',function(event, ui){
-        $("#whichEvent p").replaceWith("<p>Event Triggered: Slide Left</p>");
+    $(".page").bind('swipeleft',function(event, ui){
+        $(".whichEvent p").replaceWith("<p>Event Triggered: Slide Left</p>");
     })
     // SWIPE RIGHT EVENT
     // Triggers when a swipe event occurred moving in the right direction.
-    $("#page").bind('swiperight',function(event, ui){
-        $("#whichEvent p").replaceWith("<p>Event Triggered: Slide Right</p>");
+    $(".page").bind('swiperight',function(event, ui){
+        $(".whichEvent p").replaceWith("<p>Event Triggered: Slide Right</p>");
     })
     // TAP HOLD
     // Triggers after a held complete touch event (close to one second).
     // A standard 'tap' event is also avliable that triggers after a quick complete touch event.
-    $("#page").bind('taphold',function(event, ui){
-        $("#whichEvent p").replaceWith("<p>Event Triggered: Tap Hold</p>");
+    $(".page").bind('taphold',function(event, ui){
+        $(".whichEvent p").replaceWith("<p>Event Triggered: Tap Hold</p>");
     })
 
 });
@@ -62,6 +62,7 @@ $(function() {
  
     <div data-role="content">
       This is the page #1.
+      <div id="whichEvent"><p>Event Triggered: None Yet!</p></div>
     </div><!-- /content -->
  
     <div data-role="footer">
@@ -78,6 +79,7 @@ $(function() {
  
     <div data-role="content">
       This is the page #2.
+      <div id="whichEvent"><p>Event Triggered: None Yet!</p></div>
     </div><!-- /content -->
  
     <div data-role="footer">
@@ -94,6 +96,7 @@ $(function() {
  
     <div data-role="content">
       This is the page #3.
+      <div id="whichEvent"><p>Event Triggered: None Yet!</p></div>
     </div><!-- /content -->
  
     <div data-role="footer">
