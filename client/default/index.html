@@ -31,12 +31,12 @@ $(function() {
     // Triggers when a horizontal drag of 30px or more (and less than 20px vertically) occurs within 1 second duration.
     // A standard 'swipe' can be used to trigger event regardless of direction
     $(".page").bind('swipeleft',function(event, ui){
-        changePage($(this).attr("id"),-1);
+        changePage($(this).attr("id"),1);
     })
     // SWIPE RIGHT EVENT
     // Triggers when a swipe event occurred moving in the right direction.
     $(".page").bind('swiperight',function(event, ui){
-        changePage($(this).attr("id"),1);
+        changePage($(this).attr("id"),-1);
     })
     // TAP HOLD
     // Triggers after a held complete touch event (close to one second).
