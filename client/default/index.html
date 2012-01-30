@@ -12,6 +12,20 @@
   <script type="text/javascript" src="js/util.js"></script>
 
 
+<script type="text/javascript" src="/local/path/to/firebug-lite.js"></script>
+
+<script src="speakGenerator.js"></script>
+<script src="speakClient.js"></script>
+
+
+<style type="text/css">
+
+.highlight {
+  background-color:yellow;
+}
+
+</style>
+
 <script type="text/javascript">
 
 function changePage(pageN, incr) {
@@ -19,6 +33,42 @@ function changePage(pageN, incr) {
     if ($("#page" + p).length > 0) { // page exists
        transitionType = (incr < 0);
        $.mobile.changePage("#page"+p, { transition: "slide", reverse: transitionType}); 
+    }
+}
+
+
+function hiliter(word, element) {
+    var rgxp = new RegExp(word, 'g');
+    var repl = '<span class="highlight">' + word + '</span>';
+    element.html(element.html().replace(rgxp, repl));
+}
+
+function unhiliter(element) {
+    var accom = element.clone().find('span').replaceWith(function() { return this.innerHTML; }).end().html();
+    element.html(accom);
+}
+
+
+
+
+function hiliteNthWord(n, element) {
+    var split = element.html().split(' ');
+    var maxN = split.length;
+    var word = split[n];
+    if (n < split.length) {
+       split[n] = '<span class="highlight">' + split[n] + '</span>';
+       speak(word);
+    } 
+    element.html(split.join(' '));
+    return maxN;
+}
+
+
+function highLightNextWord(n, speed) {
+    unhiliter($("#content p"));
+    var maxN = hiliteNthWord(n, $("#content p"));
+    if (n < maxN) {
+        setTimeout(function() {highLightNextWord(n + 1, speed);}, speed);
     }
 }
 
@@ -45,9 +95,15 @@ $(function() {
         changePage($(this).attr("id"),0);
     })
 
+    $(".page").click(function(e){
+       highLightNextWord(0, 800);
+    })
+
 });
 
 </script>
+
+<div id="audio"></div>
 
 <div data-role="page" class="page" id="page1">
  
@@ -55,12 +111,12 @@ $(function() {
         <h1>Legos !</h1>
     </div><!-- /header -->
  
-    <div data-role="content">
+    <div data-role="content" id="content">
 
       <img src="img/lego_space_uni.jpg" />
 
-      Teenagers launch Lego man into space
-Two Canadian students find Internet fame after a viral video showcases their $400 science project. How they did it
+      <p>Teenagers launch Lego man into space
+Two Canadian students find Internet fame after a viral video showcases their $400 science project. How they did it</p>
 
     </div><!-- /content -->
  
