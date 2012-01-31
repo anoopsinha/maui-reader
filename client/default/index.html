@@ -24,6 +24,21 @@
   background-color:yellow;
 }
 
+.page img {
+  float:right;
+  margin-right:5px;
+  width:150px;
+}
+
+.page p {
+  display:inline;
+  background:none;
+}
+
+.content {
+  min-height:300px;
+}
+
 </style>
 
 <script type="text/javascript">
@@ -57,7 +72,7 @@ function hiliteNthWord(n, element) {
     var word = split[n];
     if (n < split.length) {
        split[n] = '<span class="highlight">' + split[n] + '</span>';
-       speak(word);
+       // speak(word);
     } 
     element.html(split.join(' '));
     return maxN;
@@ -95,15 +110,61 @@ $(function() {
         changePage($(this).attr("id"),0);
     })
 
-    $(".page").click(function(e){
-       highLightNextWord(0, 800);
-    })
+    // $(".page").click(function(e){
+    //   highLightNextWord(0, 800);
+    // })
 
 });
 
 </script>
 
 <div id="audio"></div>
+
+
+
+
+<div data-role="page" class="page" id="page-1">
+
+    <div data-role="header">
+        <h1>Aesop's Fables</h1>
+    </div><!-- /header -->
+
+    <div data-role="content" class="content">
+
+        <img src="img/antgrasshopper2.gif" style="float:right; " />
+        <a href="#page0">Contents</a><br/><br/>
+
+
+    </div><!-- /content -->
+
+    <div data-role="footer">
+      <h4></h4>
+    </div><!-- /footer -->
+</div><!-- /page -->
+
+
+<div data-role="page" class="page" id="page0">
+
+    <div data-role="header">
+        <h1>Table of Contents</h1>
+    </div><!-- /header -->
+
+    <div data-role="content" class="content">
+
+        <a href="#page1">The Ant and the Grasshopper</a><br/><br/>
+        <a href="#page2">Belling the Cat</a><br/><br/>
+        <a href="#page3">The Bundle of Sticks</a><br/><br/>
+        <a href="#page4">The Fox and the Goat</a><br/><br/>
+
+    </div><!-- /content -->
+
+    <div data-role="footer">
+      <h4>0</h4>
+    </div><!-- /footer -->
+</div><!-- /page -->
+
+
+
 
 <div data-role="page" class="page" id="page1">
 
@@ -112,23 +173,28 @@ $(function() {
 	<h3>Illustrated by Scott Roberto</h3>
     </div><!-- /header -->
 
-    <div data-role="content" id="content">
+    <div data-role="content" class="content">
 
       <img src="img/antgrasshopper1.gif" />
 
       <p>
+
+
 In a field one summer's day a Grasshopper was hopping about, chirping and singing to its heart's content. An Ant passed by, bearing along with great toil an ear of corn he was taking to the nest.
 "Why not come and chat with me," said the Grasshopper, "instead of toiling and moiling in that way?"
+
+
 "I am helping to lay up food for the winter," said the Ant, "and recommend you to do the same."
+
+
 "Why bother about winter?" said the Grasshopper; we have got plenty of food at present." But the Ant went on its way and continued its toil.
 When the winter came the Grasshopper found itself dying of hunger, while it saw the ants distributing, every day, corn and grain from the stores they had collected in the summer.
 
 Then the Grasshopper knew...
 It is best to prepare for the days of necessity.
-      </p>
+       </p>
 
-
-      <img src="img/antgrasshopper2.gif" />
+      <!-- <img src="img/antgrasshopper2.gif" style="float:right; " /> -->
 
     </div><!-- /content -->
 
@@ -145,7 +211,7 @@ It is best to prepare for the days of necessity.
 Illustrated by Suzanne Palmer</h1>
     </div><!-- /header -->
 
-    <div data-role="content" id="content">
+    <div data-role="content" class="content"> 
 
       <img src="img/bellingcat1.gif" />
 
@@ -158,12 +224,12 @@ This proposal was warmly applauded, and it had been decided to adopt it, when an
 It is easy to propose impossible remedies.
       </p>
 
-      <img src="img/bellingcat2.gif" />
+      <!-- <img src="img/bellingcat2.gif" />  -->
 
     </div><!-- /content -->
 
     <div data-role="footer">
-      <h4> </h4>
+      <h4>2</h4>
     </div><!-- /footer -->
 </div><!-- /page -->
 
@@ -175,7 +241,7 @@ It is easy to propose impossible remedies.
 Illustrated by Michael Chan</h1>
     </div><!-- /header -->
 
-    <div data-role="content" id="content">
+    <div data-role="content">
 
       <img src="img/bundleofsticks1.gif" />
 
@@ -194,7 +260,7 @@ Union gives strength.
     </div><!-- /content -->
 
     <div data-role="footer">
-      <h4> </h4>
+      <h4>3</h4>
     </div><!-- /footer -->
 </div><!-- /page -->
 
@@ -206,7 +272,7 @@ Union gives strength.
 Illustrated by Jeremy Hollister</h1>
     </div><!-- /header -->
 
-    <div data-role="content" id="content">
+    <div data-role="content">
 
       <img src="img/foxandgoat1.gif" />
 
@@ -223,7 +289,7 @@ Never trust the advice of a man in difficulties.
     </div><!-- /content -->
 
     <div data-role="footer">
-      <h4> </h4>
+      <h4>4</h4>
     </div><!-- /footer -->
 </div><!-- /page -->
 
