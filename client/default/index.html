@@ -38,8 +38,12 @@
 
 <script type="text/javascript">
 
+function currentPage(pageN) {
+    return parseInt(pageN.substring(4));   // format: page###
+}
+
 function changePage(pageN, incr) {
-    p = parseInt(pageN.substring(4)) + incr;   // format: page###
+    p = currentPage(pageN) + incr;
     if ($("#page" + p).length > 0) { // page exists
        transitionType = (incr < 0);
        $.mobile.changePage("#page"+p, { transition: "slide", reverse: transitionType}); 
@@ -73,11 +77,16 @@ function hiliteNthWord(n, element) {
 }
 
 
+var PLAYING = false;
+
 function highLightNextWord(n, speed) {
-    unhiliter($("#content p"));
-    var maxN = hiliteNthWord(n, $("#content p"));
-    if (n < maxN) {
-        setTimeout(function() {highLightNextWord(n + 1, speed);}, speed);
+    p = currentPage($.mobile.activePage.attr("id"));
+    unhiliter($("#content" + p + " p"));
+    if (PLAYING) {
+       var maxN = hiliteNthWord(n, $("#content" + p + " p"));
+       if (n < maxN) {
+            setTimeout(function() {highLightNextWord(n + 1, speed);}, speed); 
+       };
     }
 }
 
@@ -101,12 +110,14 @@ $(function() {
     // Triggers after a held complete touch event (close to one second).
     // A standard 'tap' event is also avliable that triggers after a quick complete touch event.
     $(".page").bind('taphold',function(event, ui){
-        changePage($(this).attr("id"),0);
+        if (PLAYING) {
+          PLAYING = false;  // turn off playing via a global variable
+        } else {
+	  PLAYING = true;
+  	  highLightNextWord(0, 800);
+        }
     })
 
-    // $(".page").click(function(e){
-    //   highLightNextWord(0, 800);
-    // })
 
 });
 
@@ -165,7 +176,7 @@ $(function() {
 	Illustrated by Scott Roberto</h1>
     </div><!-- /header -->
 
-    <div data-role="content" class="content">
+    <div data-role="content" class="content" id="content1">
 
       <img src="img/antgrasshopper1.gif" />
 
@@ -203,7 +214,7 @@ It is best to prepare for the days of necessity.
 Illustrated by Suzanne Palmer</h1>
     </div><!-- /header -->
 
-    <div data-role="content" class="content"> 
+    <div data-role="content" class="content" id="content2"> 
 
       <img src="img/bellingcat1.gif" />
 
@@ -233,7 +244,7 @@ It is easy to propose impossible remedies.
 Illustrated by Michael Chan</h1>
     </div><!-- /header -->
 
-    <div data-role="content">
+    <div data-role="content" class="content" id="content3">
 
       <img src="img/bundleofsticks1.gif" />
 
@@ -264,7 +275,7 @@ Union gives strength.
 Illustrated by Jeremy Hollister</h1>
     </div><!-- /header -->
 
-    <div data-role="content">
+    <div data-role="content" class="content" id="content4">
 
       <img src="img/foxandgoat1.gif" />
 
