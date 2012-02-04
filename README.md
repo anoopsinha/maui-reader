@@ -1,1 +1,1 @@
-A very basic, basic template
+A very basic ebook reader.
