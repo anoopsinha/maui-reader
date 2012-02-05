@@ -1,0 +1,354 @@
+  <link rel="stylesheet" type="text/css" href="css/main.css" />
+  <link rel="stylesheet" type="text/css" href="css/theme.css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"> 
+  <link rel="stylesheet" href="css/jquery.mobile-1.0.1.css" />
+  <script src="lib/jquery-1.6.4.js"></script>
+  <script src="lib/jquery.mobile-1.0.1.js">
+
+  <script type="text/javascript" src="config.js"></script>
+  <script type="text/javascript" src="js/prefs.js"></script>
+  <script type="text/javascript" src="js/init.js"></script>
+  <script type="text/javascript" src="js/util.js"></script>
+
+
+
+<style type="text/css">
+
+.highlight {
+  background-color:yellow;
+}
+
+.page img {
+  float:right;
+  margin-right:5px;
+  width:150px;
+}
+
+.page p {
+  display:inline;
+  background:none;
+}
+
+.content {
+  height:300px;
+  overflow:hidden;
+}
+
+</style>
+
+<script type="text/javascript">
+
+
+function currentPage(pageN) {
+    return parseInt(pageN.substring(4));   // format: page###
+}
+
+function changePage(pageN, incr) {
+    p = currentPage(pageN) + incr;
+    if ($("#page" + p).length > 0) { // page exists
+       transitionType = (incr < 0);
+       $.mobile.changePage("#page"+p, { transition: "slide", reverse: transitionType}); 
+    }
+}
+
+
+// ===== pagignation routines
+
+var g_text = '';
+
+function backoutWordsUntilHeightOk(_p, max_height) {
+
+   full_text = _p.html();  // currently showing
+
+   console.log("p height:" + _p.height() + " ; length " + full_text.length + " max_height:" + max_height);
+
+   _p.html(""); // set it to be zero
+   for (var i = 0; i < full_text.length && _p.height() < max_height; i++) {
+     if (full_text[i] == ' ') {  // only break on spaces
+       test_txt = full_text.substring(0,i);
+       _p.html(test_txt);
+     }
+   }
+
+   return_text = new Array(2);
+   return_text[0] = full_text.substring(0,i);
+   return_text[1] = full_text.substring(i);
+
+   return return_text;
+}
+
+
+
+/*
+  Take a full text and divide it into array of pages based on the text rendering height
+*/
+
+function pagignateText(full_text, height) {
+ 
+    result = new Array();
+    _render_p = $('#content0 p');  // rendering paragraph
+
+    _render_p.html(full_text);
+
+    while(true) {
+      return_text = backoutWordsUntilHeightOk(_render_p, height);
+      result.push(return_text[0]);
+      if (return_text[1].length > 0) {
+        _render_p.html(return_text[1]);
+      } else {
+        break;
+      }
+    }
+
+    console.log("pages:\n" + result.length)
+    return result;
+}
+
+
+// =====
+
+function bindEvents(elem) {
+    // SWIPE LEFT EVENT
+    // Triggers when a swipe event occurred moving in the left direction.
+    // Triggers when a horizontal drag of 30px or more (and less than 20px vertically) occurs within 1 second duration.
+    // A standard 'swipe' can be used to trigger event regardless of direction
+    elem.bind('swipeleft',function(event, ui){
+        changePage($(this).attr("id"),1);
+    });
+    // SWIPE RIGHT EVENT
+    // Triggers when a swipe event occurred moving in the right direction.
+    elem.bind('swiperight',function(event, ui){
+        changePage($(this).attr("id"),-1);
+    });
+}
+
+
+
+$(function() {
+
+    bindEvents($(".page"));
+
+    // TAP HOLD
+    // Triggers after a held complete touch event (close to one second).
+    // A standard 'tap' event is also avliable that triggers after a quick complete touch event.
+    $(".page").bind('taphold',function(event, ui){
+       title = "The Fox and the Goat";
+       subtitle = "Illustrated by Jeremy Hollister";
+       pages_array = pagignateText($("#content0 p").html(), $("#content0").height());
+
+       var new_page;
+       for (i = 0; i < pages_array.length; i++) {
+          new_page = renderTemplate(title, subtitle, pages_array[i], i+1);
+          $.mobile.pageContainer.append(new_page);
+          $('#page'+i+1).attr("data-url",'page'+i+1);
+          $('#page'+i+1).page();
+       }
+       bindEvents($(".page"));
+
+
+    })
+
+
+});
+
+
+function renderTemplate(title, subtitle, page, pagenum) {
+    var str = $('#pageTemplate').html().replace(/\${pagenum}/g,pagenum).replace(/\${story}/g, page).replace(/\${title}/g, title).replace(/\${subtitle}/g, subtitle);
+    return str;
+}
+
+</script>
+
+
+<!-- page template -->
+<script id="pageTemplate" type="text/html">
+
+<div data-role="page" class="page" id="page${pagenum}">
+    <div data-role="header">
+        <h1>${title}<br/>
+        ${subtitle}</h1>
+    </div><!-- /header -->
+    <div data-role="content" class="content" id="content${pagenum}">
+      <!-- <img src="img/foxandgoat1.gif" /> -->
+      <p>${story}</p>
+    </div><!-- /content -->
+    <div data-role="footer">
+      <h4>${pagenum}</h4>
+    </div><!-- /footer -->
+</div><!-- /page -->
+
+</script>
+<!-- page template -->
+
+
+<div data-role="page" class="page" id="page0">
+
+    <div data-role="header">
+        <h1>The Fox and the Goat<br/>
+Illustrated by Jeremy Hollister</h1>
+    </div><!-- /header -->
+
+    <div data-role="content" class="content" id="content0">
+
+      <!-- <img src="img/foxandgoat1.gif" /> -->
+
+      <p>
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+
+      </p>
+
+    </div><!-- /content -->
+
+    <div data-role="footer">
+      <h4 id="pagenum">0</h4>
+    </div><!-- /footer -->
+</div><!-- /page -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
