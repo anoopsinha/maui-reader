@@ -1,0 +1,304 @@
+  <link rel="stylesheet" type="text/css" href="css/main.css" />
+  <link rel="stylesheet" type="text/css" href="css/theme.css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"> 
+  <link rel="stylesheet" href="css/jquery.mobile-1.0.1.css" />
+  <script src="lib/jquery-1.6.4.js"></script>
+  <script src="lib/jquery.tmpl.js">
+  <script src="lib/jquery.mobile-1.0.1.js">
+
+  <script type="text/javascript" src="config.js"></script>
+  <script type="text/javascript" src="js/prefs.js"></script>
+  <script type="text/javascript" src="js/init.js"></script>
+  <script type="text/javascript" src="js/util.js"></script>
+
+
+
+<style type="text/css">
+
+.highlight {
+  background-color:yellow;
+}
+
+.page img {
+  float:right;
+  margin-right:5px;
+  width:150px;
+}
+
+.page p {
+  display:inline;
+  background:none;
+}
+
+.content {
+  min-height:300px;
+}
+
+</style>
+
+<script type="text/javascript">
+
+function currentPage(pageN) {
+    return parseInt(pageN.substring(4));   // format: page###
+}
+
+function changePage(pageN, incr) {
+    p = currentPage(pageN) + incr;
+    if ($("#page" + p).length > 0) { // page exists
+       transitionType = (incr < 0);
+       $.mobile.changePage("#page"+p, { transition: "slide", reverse: transitionType}); 
+    }
+}
+
+
+function hiliter(word, element) {
+    var rgxp = new RegExp(word, 'g');
+    var repl = '<span class="highlight">' + word + '</span>';
+    element.html(element.html().replace(rgxp, repl));
+}
+
+function unhiliter(element) {
+    var accom = element.clone().find('span').replaceWith(function() { return this.innerHTML; }).end().html();
+    element.html(accom);
+}
+
+
+
+
+function hiliteNthWord(n, element) {
+    var split = element.html().split(' ');
+    var maxN = split.length;
+    var word = split[n];
+    if (n < split.length) {
+       split[n] = '<span class="highlight">' + split[n] + '</span>';
+    } 
+    element.html(split.join(' '));
+    return maxN;
+}
+
+
+var PLAYING = false;
+
+function highLightNextWord(n, speed) {
+    p = currentPage($.mobile.activePage.attr("id"));
+    unhiliter($("#content" + p + " p"));
+    if (PLAYING) {
+       var maxN = hiliteNthWord(n, $("#content" + p + " p"));
+       if (n < maxN) {
+            setTimeout(function() {highLightNextWord(n + 1, speed);}, speed); 
+       };
+    }
+}
+
+
+
+
+$(function() {
+
+
+    // SWIPE LEFT EVENT
+    // Triggers when a swipe event occurred moving in the left direction.
+    // Triggers when a horizontal drag of 30px or more (and less than 20px vertically) occurs within 1 second duration.
+    // A standard 'swipe' can be used to trigger event regardless of direction
+    $(".page").bind('swipeleft',function(event, ui){
+        changePage($(this).attr("id"),1);
+    })
+    // SWIPE RIGHT EVENT
+    // Triggers when a swipe event occurred moving in the right direction.
+    $(".page").bind('swiperight',function(event, ui){
+        changePage($(this).attr("id"),-1);
+    })
+    // TAP HOLD
+    // Triggers after a held complete touch event (close to one second).
+    // A standard 'tap' event is also avliable that triggers after a quick complete touch event.
+    $(".page").bind('taphold',function(event, ui){
+        if (PLAYING) {
+          PLAYING = false;  // turn off playing via a global variable
+        } else {
+	  PLAYING = true;
+  	  highLightNextWord(0, 800);
+        }
+    })
+
+
+});
+
+</script>
+
+
+
+
+<div data-role="page" class="page" id="page-1">
+
+    <div data-role="header">
+        <h1>Aesop's Fables</h1>
+    </div><!-- /header -->
+
+    <div data-role="content" class="content">
+
+        <img src="img/antgrasshopper2.gif" style="float:right; " />
+        <a href="#page0">Contents</a><br/><br/>
+
+
+    </div><!-- /content -->
+
+    <div data-role="footer">
+      <h4></h4>
+    </div><!-- /footer -->
+</div><!-- /page -->
+
+
+<div data-role="page" class="page" id="page0">
+
+    <div data-role="header">
+        <h1>Table of Contents</h1>
+    </div><!-- /header -->
+
+    <div data-role="content" class="content">
+
+        <a href="#page1">The Ant and the Grasshopper</a><br/><br/>
+        <a href="#page2">Belling the Cat</a><br/><br/>
+        <a href="#page3">The Bundle of Sticks</a><br/><br/>
+        <a href="#page4">The Fox and the Goat</a><br/><br/>
+
+    </div><!-- /content -->
+
+    <div data-role="footer">
+      <h4>0</h4>
+    </div><!-- /footer -->
+</div><!-- /page -->
+
+
+
+
+<div data-role="page" class="page" id="page1">
+
+    <div data-role="header">
+        <h1>The Ant and the Grasshopper<br/>
+	Illustrated by Scott Roberto</h1>
+    </div><!-- /header -->
+
+    <div data-role="content" class="content" id="content1">
+
+      <img src="img/antgrasshopper1.gif" />
+
+      <p>
+
+
+In a field one summer's day a Grasshopper was hopping about, chirping and singing to its heart's content. An Ant passed by, bearing along with great toil an ear of corn he was taking to the nest.
+"Why not come and chat with me," said the Grasshopper, "instead of toiling and moiling in that way?"
+
+
+"I am helping to lay up food for the winter," said the Ant, "and recommend you to do the same."
+
+
+"Why bother about winter?" said the Grasshopper; we have got plenty of food at present." But the Ant went on its way and continued its toil.
+When the winter came the Grasshopper found itself dying of hunger, while it saw the ants distributing, every day, corn and grain from the stores they had collected in the summer.
+
+Then the Grasshopper knew...
+It is best to prepare for the days of necessity.
+       </p>
+
+      <!-- <img src="img/antgrasshopper2.gif" style="float:right; " /> -->
+
+    </div><!-- /content -->
+
+    <div data-role="footer">
+      <h4>1</h4>
+    </div><!-- /footer -->
+</div><!-- /page -->
+
+
+<div data-role="page" class="page" id="page2">
+
+    <div data-role="header">
+        <h1>Belling the Cat<br/>
+Illustrated by Suzanne Palmer</h1>
+    </div><!-- /header -->
+
+    <div data-role="content" class="content" id="content2"> 
+
+      <img src="img/bellingcat1.gif" />
+
+      <p>
+Once upon a time, all the mice met, together in council, to discuss the best means of securing themselves against the attacks of the cat.
+
+After several suggestions had been debated, a Mouse of some standing and experience got up and said, "I think I have hit upon a plan which will ensure our safety in the future, provided you approve and carry it out. It is that we should fasten a bell around the neck of our enemy the cat, which will, by its tinkling, warn us of her approach."
+
+This proposal was warmly applauded, and it had been decided to adopt it, when an old Mouse got upon his feet and said, "I agree with you all that the plan before us is an admirable one: but may I ask who is going to bell the cat?"
+It is easy to propose impossible remedies.
+      </p>
+
+      <!-- <img src="img/bellingcat2.gif" />  -->
+
+    </div><!-- /content -->
+
+    <div data-role="footer">
+      <h4>2</h4>
+    </div><!-- /footer -->
+</div><!-- /page -->
+
+
+<div data-role="page" class="page" id="page3">
+
+    <div data-role="header">
+        <h1>The Bundle of Sticks<br/>
+Illustrated by Michael Chan</h1>
+    </div><!-- /header -->
+
+    <div data-role="content" class="content" id="content3">
+
+      <img src="img/bundleofsticks1.gif" />
+
+      <p>
+A father had a family of sons who were perpetually quarreling among themselves. When he failed to heal their disputes by his exhortations, he determined to give them a practical illustration of the evils of disunion; and for this purpose he one day told them to bring him a bundle of sticks.
+
+When they had done so, he placed the bundle into the hands of each of them in succession, and ordered them to break it in pieces. They tried with all their strength, and were not able to do it.
+
+He next opened the bundle, took the sticks separately, one by one, and again put them into his sons' hands, upon which they broke them easily.
+
+He then addressed them in these words: "My sons, if you are of one mind, and unite to assist each other, you will be as this bundle, uninjured by all the attempts of your enemies; but if you are divided among yourselves, you will be broken as easily as these sticks."
+
+Union gives strength.
+      </p>
+
+    </div><!-- /content -->
+
+    <div data-role="footer">
+      <h4>3</h4>
+    </div><!-- /footer -->
+</div><!-- /page -->
+
+
+<div data-role="page" class="page" id="page4">
+
+    <div data-role="header">
+        <h1>The Fox and the Goat<br/>
+Illustrated by Jeremy Hollister</h1>
+    </div><!-- /header -->
+
+    <div data-role="content" class="content" id="content4">
+
+      <img src="img/foxandgoat1.gif" />
+
+      <p>
+
+By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+
+The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
+Remember next time...
+Never trust the advice of a man in difficulties.
+
+      </p>
+
+    </div><!-- /content -->
+
+    <div data-role="footer">
+      <h4>4</h4>
+    </div><!-- /footer -->
+</div><!-- /page -->
+
+
+
+
