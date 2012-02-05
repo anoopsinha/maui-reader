@@ -64,16 +64,39 @@ function backoutWordsUntilHeightOk(_p, max_height) {
    console.log("p height:" + _p.height() + " ; length " + full_text.length + " max_height:" + max_height);
 
    _p.html(""); // set it to be zero
+   trailing_i = 0; // track the previous word break
    for (var i = 0; i < full_text.length && _p.height() < max_height; i++) {
      if (full_text[i] == ' ') {  // only break on spaces
+       trailing_i = _p.html().length;  // need to keep track, one word back 
        test_txt = full_text.substring(0,i);
        _p.html(test_txt);
      }
    }
 
+   if (i == full_text.length) {
+      trailing_i = i;
+   }					
+
    return_text = new Array(2);
-   return_text[0] = full_text.substring(0,i);
-   return_text[1] = full_text.substring(i);
+   console.log("i = " + i + " trailing_i = " + trailing_i);
+   return_text[0] = full_text.substring(0,trailing_i); // backtrack one word
+   return_text[1] = full_text.substring(trailing_i);
+
+   // remove ' ' or <br/> at start of return_text[1]
+   while (return_text[1].indexOf(" ") == 0) {
+     return_text[1] = return_text[1].substring(1);
+   }
+   while (return_text[1].indexOf("<br/>") == 0) {
+     return_text[1] = return_text[1].substring(5);
+   }
+   while (return_text[1].indexOf("<br>") == 0) {
+     return_text[1] = return_text[1].substring(4);
+   }
+   while (return_text[1].indexOf(" ") == 0) {
+     return_text[1] = return_text[1].substring(1);
+   }
+   console.log("return text:");
+   console.log(return_text[1]);
 
    return return_text;
 }
@@ -99,6 +122,7 @@ function pagignateText(full_text, height) {
       } else {
         break;
       }
+      alert('check');
     }
 
     console.log("pages:\n" + result.length)
@@ -126,17 +150,26 @@ function bindEvents(elem) {
 
 
 $(function() {
-
+    initializeStory();
     bindEvents($(".page"));
+});
 
-    // TAP HOLD
-    // Triggers after a held complete touch event (close to one second).
-    // A standard 'tap' event is also avliable that triggers after a quick complete touch event.
-    $(".page").bind('taphold',function(event, ui){
-       title = "The Fox and the Goat";
-       subtitle = "Illustrated by Jeremy Hollister";
-       pages_array = pagignateText($("#content0 p").html(), $("#content0").height());
 
+function initializeStory() {
+       title = "Pride and Prejudice";
+       subtitle = "Chapter 1";
+       text_to_render = escape($("#content0 p").html());
+       console.log(text_to_render);		       
+
+       // NEED space before & after <br/><br/> for demarcation of a sentence!
+       text_to_render = text_to_render.replace(/%0A%0A/g, ' <br/><br/> ' ).replace(/%0A/g, ' ');  
+       text_to_render = unescape(text_to_render);
+       console.log(text_to_render);		       
+
+       pages_array = pagignateText(text_to_render, $("#content0").height());
+       $("#content0 p").html('<a href="#page1">Begin reading...</a>');  // fix title page
+
+       // take the array of pages and add jquery mobile pages
        var new_page;
        for (i = 0; i < pages_array.length; i++) {
           new_page = renderTemplate(title, subtitle, pages_array[i], i+1);
@@ -144,10 +177,9 @@ $(function() {
           $('#page'+i+1).attr("data-url",'page'+i+1);
           $('#page'+i+1).page();
        }
-    })
 
-
-});
+       $.mobile.changePage("#page"+1);        // start at page 1
+}
 
 
 function renderTemplate(title, subtitle, page, pagenum) {
@@ -182,8 +214,8 @@ function renderTemplate(title, subtitle, page, pagenum) {
 <div data-role="page" class="page" id="page0">
 
     <div data-role="header">
-        <h1>The Fox and the Goat<br/>
-Illustrated by Jeremy Hollister</h1>
+        <h1>Pride and Prejudice<br/>
+by Jane Austen</h1>
     </div><!-- /header -->
 
     <div data-role="content" class="content" id="content0">
@@ -191,141 +223,117 @@ Illustrated by Jeremy Hollister</h1>
       <!-- <img src="img/foxandgoat1.gif" /> -->
 
       <p>
+It is a truth universally acknowledged, that a single man in possession
+of a good fortune, must be in want of a wife.
 
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+However little known the feelings or views of such a man may be on his
+first entering a neighbourhood, this truth is so well fixed in the minds
+of the surrounding families, that he is considered the rightful property
+of some one or other of their daughters.
 
-The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
-Remember next time...
-Never trust the advice of a man in difficulties.
+"My dear Mr. Bennet," said his lady to him one day, "have you heard that
+Netherfield Park is let at last?"
 
+Mr. Bennet replied that he had not.
 
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+"But it is," returned she; "for Mrs. Long has just been here, and she
+told me all about it."
 
-The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
-Remember next time...
-Never trust the advice of a man in difficulties.
+Mr. Bennet made no answer.
 
+"Do you not want to know who has taken it?" cried his wife impatiently.
 
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+"_You_ want to tell me, and I have no objection to hearing it."
 
-The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
-Remember next time...
-Never trust the advice of a man in difficulties.
+This was invitation enough.
 
+"Why, my dear, you must know, Mrs. Long says that Netherfield is taken
+by a young man of large fortune from the north of England; that he came
+down on Monday in a chaise and four to see the place, and was so much
+delighted with it, that he agreed with Mr. Morris immediately; that he
+is to take possession before Michaelmas, and some of his servants are to
+be in the house by the end of next week."
 
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+"What is his name?"
 
-The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
-Remember next time...
-Never trust the advice of a man in difficulties.
+"Bingley."
 
+"Is he married or single?"
 
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+"Oh! Single, my dear, to be sure! A single man of large fortune; four or
+five thousand a year. What a fine thing for our girls!"
 
-The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
-Remember next time...
-Never trust the advice of a man in difficulties.
+"How so? How can it affect them?"
 
+"My dear Mr. Bennet," replied his wife, "how can you be so tiresome! You
+must know that I am thinking of his marrying one of them."
 
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+"Is that his design in settling here?"
 
-The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
-Remember next time...
-Never trust the advice of a man in difficulties.
+"Design! Nonsense, how can you talk so! But it is very likely that he
+_may_ fall in love with one of them, and therefore you must visit him as
+soon as he comes."
 
+"I see no occasion for that. You and the girls may go, or you may send
+them by themselves, which perhaps will be still better, for as you are
+as handsome as any of them, Mr. Bingley may like you the best of the
+party."
 
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+"My dear, you flatter me. I certainly _have_ had my share of beauty, but
+I do not pretend to be anything extraordinary now. When a woman has five
+grown-up daughters, she ought to give over thinking of her own beauty."
 
+"In such cases, a woman has not often much beauty to think of."
 
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+"But, my dear, you must indeed go and see Mr. Bingley when he comes into
+the neighbourhood."
 
-The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
-Remember next time...
-Never trust the advice of a man in difficulties.
+"It is more than I engage for, I assure you."
 
+"But consider your daughters. Only think what an establishment it would
+be for one of them. Sir William and Lady Lucas are determined to go,
+merely on that account, for in general, you know, they visit no
+newcomers. Indeed you must go, for it will be impossible for _us_ to
+visit him if you do not."
 
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+"You are over-scrupulous, surely. I dare say Mr. Bingley will be very
+glad to see you; and I will send a few lines by you to assure him of my
+hearty consent to his marrying whichever he chooses of the girls; though
+I must throw in a good word for my little Lizzy."
 
-The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
-Remember next time...
-Never trust the advice of a man in difficulties.
+"I desire you will do no such thing. Lizzy is not a bit better than the
+others; and I am sure she is not half so handsome as Jane, nor half so
+good-humoured as Lydia. But you are always giving _her_ the preference."
 
+"They have none of them much to recommend them," replied he; "they are
+all silly and ignorant like other girls; but Lizzy has something more of
+quickness than her sisters."
 
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+"Mr. Bennet, how _can_ you abuse your own children in such a way? You
+take delight in vexing me. You have no compassion for my poor nerves."
 
-The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
-Remember next time...
-Never trust the advice of a man in difficulties.
+"You mistake me, my dear. I have a high respect for your nerves. They
+are my old friends. I have heard you mention them with consideration
+these last twenty years at least."
 
+"Ah, you do not know what I suffer."
 
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
+"But I hope you will get over it, and live to see many young men of four
+thousand a year come into the neighbourhood."
 
-The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
-Remember next time...
-Never trust the advice of a man in difficulties.
+"It will be no use to us, if twenty such should come, since you will not
+visit them."
 
+"Depend upon it, my dear, that when there are twenty, I will visit them
+all."
 
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
-
-The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
-Remember next time...
-Never trust the advice of a man in difficulties.
-
-
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
-
-The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
-Remember next time...
-Never trust the advice of a man in difficulties.
-
-
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
-
-
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
-
-The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
-Remember next time...
-Never trust the advice of a man in difficulties.
-
-
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
-
-The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
-Remember next time...
-Never trust the advice of a man in difficulties.
-
-
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
-
-The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
-Remember next time...
-Never trust the advice of a man in difficulties.
-
-
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
-
-The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
-Remember next time...
-Never trust the advice of a man in difficulties.
-
-
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
-
-The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
-Remember next time...
-Never trust the advice of a man in difficulties.
-
-
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
-
-The Goat thought well of this advice, and jumped down into the well. But the Fox immediately jumped on her back, and by putting his foot on her long horns managed to jump up to the edge of the well. "Good-bye, friend," said the Fox.
-Remember next time...
-Never trust the advice of a man in difficulties.
-
-
-By an unlucky chance a Fox fell into a deep well from which he could not get out. A Goat passed shortly afterwards, and asked the Fox what he was doing down there. "Oh, have you not heard?" said the Fox; "there is going to be a great drought, so I jumped down here in order to be sure to have water by me. Why don't you come down too?"
-
+Mr. Bennet was so odd a mixture of quick parts, sarcastic humour,
+reserve, and caprice, that the experience of three-and-twenty years had
+been insufficient to make his wife understand his character. _Her_ mind
+was less difficult to develop. She was a woman of mean understanding,
+little information, and uncertain temper. When she was discontented, she
+fancied herself nervous. The business of her life was to get her
+daughters married; its solace was visiting and news.
 
       </p>
 
