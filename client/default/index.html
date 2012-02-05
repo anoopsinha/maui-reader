@@ -30,10 +30,10 @@ function changePage(pageN, incr) {
     }
 }
 
+// ----------------------
+// Pagignation routines
+// ----------------------
 
-// ===== pagignation routines
-
-var g_text = '';
 
 function backoutWordsUntilHeightOk(_p, max_height) {
 
@@ -107,7 +107,11 @@ function pagignateText(full_text, height) {
 }
 
 
-// =====
+
+// ----------------------
+// End - Pagignation routines
+// ----------------------
+
 
 function bindEvents(elem) {
     // SWIPE LEFT EVENT
@@ -132,10 +136,10 @@ function setContentHeight() {
 }
 
 $(function() {
-    setContentHeight();
+    //setContentHeight();
     initializeStory();
     bindEvents($(".page"));
-    setContentHeight();
+    //setContentHeight();
 });
 
 
