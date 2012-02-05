@@ -1,8 +1,10 @@
+
+  <link rel="stylesheet" href="css/jquery.mobile-1.0.1.css" />
   <link rel="stylesheet" type="text/css" href="css/main.css" />
   <link rel="stylesheet" type="text/css" href="css/theme.css" />
   
   <meta name="viewport" content="width=device-width, initial-scale=1"> 
-  <link rel="stylesheet" href="css/jquery.mobile-1.0.1.css" />
+
   <script src="lib/jquery-1.6.4.js"></script>
   <script src="lib/jquery.mobile-1.0.1.js">
 
@@ -12,30 +14,6 @@
   <script type="text/javascript" src="js/util.js"></script>
 
 
-
-<style type="text/css">
-
-.highlight {
-  background-color:yellow;
-}
-
-.page img {
-  float:right;
-  margin-right:5px;
-  width:150px;
-}
-
-.page p {
-  display:inline;
-  background:none;
-}
-
-.content {
-  height:300px;
-  overflow:hidden;
-}
-
-</style>
 
 <script type="text/javascript">
 
@@ -147,10 +125,17 @@ function bindEvents(elem) {
 }
 
 
+function setContentHeight() {
+    console.log("height buffer: " + ($("#content0").outerHeight() - $("#content0").height()))
+
+    $(".content").height($('body').outerHeight()-$(".footer").outerHeight()-$(".header").outerHeight() - ($(".content").outerHeight() - $(".content").height()));
+}
 
 $(function() {
+    setContentHeight();
     initializeStory();
     bindEvents($(".page"));
+    setContentHeight();
 });
 
 
@@ -193,7 +178,7 @@ function renderTemplate(title, subtitle, page, pagenum) {
 <script id="pageTemplate" type="text/html">
 
 <div data-role="page" class="page" id="page${pagenum}">
-    <div data-role="header">
+    <div data-role="header" class="header">
         <h1>${title}<br/>
         ${subtitle}</h1>
     </div><!-- /header -->
@@ -201,7 +186,7 @@ function renderTemplate(title, subtitle, page, pagenum) {
       <!-- <img src="img/foxandgoat1.gif" /> -->
       <p>${story}</p>
     </div><!-- /content -->
-    <div data-role="footer">
+    <div data-role="footer" class="footer">
       <h4>${pagenum}</h4>
     </div><!-- /footer -->
 </div><!-- /page -->
@@ -212,7 +197,7 @@ function renderTemplate(title, subtitle, page, pagenum) {
 
 <div data-role="page" class="page" id="page0">
 
-    <div data-role="header">
+    <div data-role="header" class="header">
         <h1>Pride and Prejudice<br/>
 by Jane Austen</h1>
     </div><!-- /header -->
@@ -338,7 +323,7 @@ daughters married; its solace was visiting and news.
 
     </div><!-- /content -->
 
-    <div data-role="footer">
+    <div data-role="footer" class="footer">
       <h4 id="pagenum">0</h4>
     </div><!-- /footer -->
 </div><!-- /page -->

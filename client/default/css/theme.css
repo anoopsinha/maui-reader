@@ -1,12 +1,36 @@
-#content {
-  background-color: #ddd;
+.content {
+  background-color: #000;
+}
+
+h1, h2, h3, h4 {
+  font-family: Georgia, Times, Times New Roman, serif;
 }
 
 p {
   background-color: #fff;
-  color: #000
+  color: #FFF;
+  font-family: Georgia, Times, Times New Roman, serif;
+  text-shadow: none;
 }
 
-a: {
-  color: #2879c7;
+
+.highlight {
+  background-color:yellow;
 }
+
+.page img {
+  float:right;
+  margin-right:5px;
+  width:150px;
+}
+
+.page p {
+  display:inline;
+  background:none;
+}
+
+.content {
+  height:300px;
+  overflow:hidden;
+}
+
