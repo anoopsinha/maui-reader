@@ -132,14 +132,14 @@ function bindEvents(elem) {
 function setContentHeight() {
     console.log("height buffer: " + ($("#content0").outerHeight() - $("#content0").height()))
 
-    $(".content").height($('body').outerHeight()-$(".footer").outerHeight()-$(".header").outerHeight() - ($(".content").outerHeight() - $(".content").height()));
+    $(".content").height($('body').outerHeight()-$(".footer").outerHeight()-$(".header").outerHeight() - ($("#content0").outerHeight() - $("#content0").height()));
 }
 
 $(function() {
     setContentHeight();
     initializeStory();
     bindEvents($(".page"));
-    setContentHeight();
+    //setContentHeight();
 });
 
 
