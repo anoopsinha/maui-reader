@@ -20,9 +20,21 @@
 
 <script type="text/javascript">
 
+var DEBUG = false;
+
+function debug(x) {
+   if (DEBUG) {  
+     console.log(x);
+   }
+}
+
 
 function currentPage(pageN) {
     return parseInt(pageN.substring(4));   // format: page###
+}
+
+function totalPages() {
+    return $.mobile.pageContainer.find('.page').length;
 }
 
 function changePage(pageN, incr) {
@@ -42,7 +54,7 @@ function backoutWordsUntilHeightOk(_p, max_height) {
 
    full_text = _p.html();  // currently showing
 
-   console.log("p height:" + _p.height() + " ; length " + full_text.length + " max_height:" + max_height);
+   debug("p height:" + _p.height() + " ; length " + full_text.length + " max_height:" + max_height);
 
    _p.html(""); // set it to be zero
    trailing_i = 0; // track the previous word break
@@ -59,7 +71,7 @@ function backoutWordsUntilHeightOk(_p, max_height) {
    }					
 
    return_text = new Array(2);
-   console.log("i = " + i + " trailing_i = " + trailing_i);
+   debug("i = " + i + " trailing_i = " + trailing_i);
    return_text[0] = full_text.substring(0,trailing_i); // backtrack one word
    return_text[1] = full_text.substring(trailing_i);
 
@@ -76,8 +88,8 @@ function backoutWordsUntilHeightOk(_p, max_height) {
    while (return_text[1].indexOf(" ") == 0) {
      return_text[1] = return_text[1].substring(1);
    }
-   console.log("return text:");
-   console.log(return_text[1]);
+   debug("return text:");
+   debug(return_text[1]);
 
    return return_text;
 }
@@ -105,7 +117,7 @@ function pagignateText(full_text, height) {
       }
     }
 
-    console.log("pages:\n" + result.length)
+    debug("pages:\n" + result.length)
     return result;
 }
 
@@ -121,47 +133,99 @@ function bindEvents(elem) {
     // Triggers when a swipe event occurred moving in the left direction.
     // Triggers when a horizontal drag of 30px or more (and less than 20px vertically) occurs within 1 second duration.
     // A standard 'swipe' can be used to trigger event regardless of direction
-    elem.bind('swipeleft',function(event, ui){
+    elem.live('swipeleft',function(event, ui){
         changePage($(this).attr("id"),1);
     });
     // SWIPE RIGHT EVENT
     // Triggers when a swipe event occurred moving in the right direction.
-    elem.bind('swiperight',function(event, ui){
+    elem.live('swiperight',function(event, ui){
         changePage($(this).attr("id"),-1);
     });
 }
 
 
 function setContentHeight() {
-    console.log("height buffer: " + ($("#content0").outerHeight() - $("#content0").height()))
+    debug("height buffer: " + ($("#content0").outerHeight() - $("#content0").height()))
 
     $(".content").height($('body').outerHeight()-$(".footer").outerHeight()-$(".header").outerHeight() - ($("#content0").outerHeight() - $("#content0").height()));
 }
 
-function initializeStory() {
-       title = "Pride and Prejudice";
-       subtitle = "Chapter 1";
+
+function renderStory(story_text) {
        text_to_render = escape($("#content0 p").html());
-       console.log(text_to_render);		       
 
        // NEED space before & after <br/><br/> for demarcation of a sentence!
        text_to_render = text_to_render.replace(/%0A%0A/g, ' <br/><br/> ' ).replace(/%0A/g, ' ');  
        text_to_render = unescape(text_to_render);
-       console.log(text_to_render);		       
+       debug(text_to_render);		       
 
        pages_array = pagignateText(text_to_render, $("#content0").height());
-       $("#content0 p").html('<a href="#page1">Begin reading...</a>');  // fix title page
+
+       // check if there are more pages than needed already showing
+       num_pages = $.mobile.pageContainer.find('.page').length;
+       if (num_pages > pages_array.length + 1) {
+          for (i = num_pages; i > pages_array.length + 1; i--) {
+             // can't erase the page so make it pageNONE, not in the flow
+             $.mobile.pageContainer.find('#page'+(i-1)).attr("data-role", "NOT PAGE");
+             $.mobile.pageContainer.find('#page'+(i-1)).attr("data-url", "NOT PAGE");
+             $.mobile.pageContainer.find('#page'+(i-1)).removeClass("page");
+             $.mobile.pageContainer.find('#page'+(i-1)).attr("id", "pageNONE");
+          }
+       }
 
        // take the array of pages and add jquery mobile pages
        var new_page;
        for (i = 0; i < pages_array.length; i++) {
           new_page = renderTemplate(title, subtitle, pages_array[i], i+1);
-          $.mobile.pageContainer.append(new_page);
-          $('#page'+i+1).attr("data-url",'page'+i+1);
-          $('#page'+i+1).page();
+
+	  // if the page already exists, just replace the content
+          if ($.mobile.pageContainer.find('#page'+(i+1)).length > 0) {  
+              // need to use a temp element to do this
+              $('body').prepend('<div id="temp"></div>');
+              $('#temp').append(new_page);
+              $.mobile.pageContainer.find('#page'+(i+1)).find('.content').html($('#temp').find('.page').find('.content').html());
+              $('#temp').remove();
+          } else {
+              $.mobile.pageContainer.append(new_page);
+          }
+
+          $('#page'+(i+1)).attr("data-url",'page'+(i+1));
+          $('#page'+(i+1)).page();
        }
 
-       $.mobile.changePage("#page"+1);        // start at page 1
+
+}
+
+
+function initializeStory(current_page_id) {
+
+       $.mobile.changePage("#page0");
+
+       title = "Pride and Prejudice";
+       subtitle = "Chapter 1";
+ 
+       $("#content0 p").show();
+       original_full_story = $("#content0 p").html();
+
+       renderStory(original_full_story);
+
+       $("#content0 p").html(original_full_story);  // reset title page
+       $("#content0 p").hide();
+       if ($("#content0 a").length == 0) {
+         $("#content0").append('<a href="#page1">Begin reading...</a>');  // reset title page
+       }
+
+       if (typeof current_page_id == 'undefined') {
+          $.mobile.changePage("#page"+1);        // start at page 1
+       } else {
+          n = currentPage(current_page_id);
+          if (n + 1 >= totalPages()) {  // check if we are beyond maximum
+             current_page_id = "#page"+(totalPages() - 1);
+          }
+          $.mobile.changePage("#" + current_page_id);
+       }
+
+       setContentHeight();
 }
 
 
@@ -172,34 +236,54 @@ function renderTemplate(title, subtitle, page, pagenum) {
 
 
 $(function() {
+
+    bindEvents($(".page"));
+
     setContentHeight();
     initializeStory();
-    bindEvents($(".page"));
-    setContentHeight();
 
-$(document).delegate('.simplebool', 'click', function() {
-  $(this).simpledialog({
-    'mode' : 'bool',
-    'prompt' : 'What color scheme?',
-    'useModal': true,
-    'buttons' : {
-      'White on Black': {
-        click: function () {
-          $('.content').css('background-color', '#000');
-          $('p').css('color', '#FFF');
-        }
-      },
-      'Black on White': {
-        click: function () {
-          $('.content').css('background-color', '#FFF');
-          $('p').css('color', '#000');
-        },
-        icon: "delete",
-        theme: "c"
+
+    $(document).delegate('.pickColor', 'click', function() {
+      $(this).simpledialog({
+         'mode' : 'bool',
+         'prompt' : 'What color scheme?',
+         'useModal': true,
+         'buttons' : {
+            'White on Black': {
+            click: function () {
+               $('.content').css('background-color', '#000');
+               $('p').css('color', '#FFF');
+            }
+          },
+        'Black on White': {
+             click: function () {
+               $('.content').css('background-color', '#FFF');
+               $('p').css('color', '#000');
+             },
+          icon: "delete",
+          theme: "c"
+         }
       }
-    }
-  })
-})
+    })
+   })  // end document.delegate
+
+
+
+    $(document).delegate('.pickTextBigger', 'click', function() {
+	       cur_font_size = parseInt($('p').css('font-size'), 10);
+	       cur_font_size = cur_font_size + 2;
+               $('p').css('font-size', cur_font_size + 'px');
+               initializeStory($.mobile.activePage.attr("id"));
+               $('p').css('font-size', cur_font_size + 'px');
+    });
+
+    $(document).delegate('.pickTextSmaller', 'click', function() {
+	       cur_font_size = parseInt($('p').css('font-size'), 10);
+               if (cur_font_size > 5) { cur_font_size = cur_font_size - 2; }
+               $('p').css('font-size', cur_font_size + 'px');
+               initializeStory($.mobile.activePage.attr("id"));
+               $('p').css('font-size', cur_font_size + 'px');
+    });
 
 
 });
@@ -226,9 +310,19 @@ $(document).delegate('.simplebool', 'click', function() {
     <div data-role="footer" class="footer">
 
 <a style="margin-left:25px;top:7px;" href="#page0" data-role="button">Home</a>
-<a style="float:right; margin-right:25px;top:5px;" href="#" class="simplebool" data-role="button"> 
+
+<a style="float:right; margin-right:25px;top:5px;" href="#" class="pickTextBigger" data-role="button"> 
+   <img src="img/16Px-148.png" class="footer-img" /> 
+</a>
+
+<a style="float:right; margin-right:25px;top:5px;" href="#" class="pickTextSmaller" data-role="button"> 
+   <img src="img/16Px-147.png" class="footer-img" /> 
+</a>
+
+<a style="float:right; margin-right:25px;top:5px;" href="#" class="pickColor" data-role="button"> 
    <img src="img/16Px-216.png" class="footer-img" /> 
 </a>
+
 <div style="margin: 0 auto; width: 10px; bottom: 15px; position: relative;">${pagenum}</div>
 
     </div><!-- /footer -->
@@ -369,9 +463,20 @@ daughters married; its solace was visiting and news.
     <div data-role="footer" class="footer">
 
 <a style="margin-left:25px;top:7px;" href="#page0" data-role="button">Home</a>
-<a style="float:right; margin-right:25px;top:5px;" href="#" class="simplebool" data-role="button"> 
+
+<a style="float:right; margin-right:25px;top:5px;" href="#" class="pickTextBigger" data-role="button"> 
+   <img src="img/16Px-148.png" class="footer-img" /> 
+</a>
+
+<a style="float:right; margin-right:25px;top:5px;" href="#" class="pickTextSmaller" data-role="button"> 
+   <img src="img/16Px-147.png" class="footer-img" /> 
+</a>
+
+<a style="float:right; margin-right:25px;top:5px;" href="#" class="pickColor" data-role="button"> 
    <img src="img/16Px-216.png" class="footer-img" /> 
 </a>
+
+
 <div style="margin: 0 auto; width: 10px; bottom: 15px; position: relative;">0</div>
 
 
