@@ -286,6 +286,13 @@ $(function() {
     });
 
 
+    $(document).delegate('.testButton', 'click', function() {
+       alert('hi mom');
+       
+
+    });
+
+
 });
 
 
@@ -302,6 +309,11 @@ $(function() {
     <div data-role="header" class="header">
         <h1>${title}<br/>
         ${subtitle}</h1>
+
+<a style="float:right; margin-right:25px;top:5px;" href="#" class="testButton" data-role="button"> 
+   <img src="img/16Px-148.png" class="header-img" /> 
+</a>
+
     </div><!-- /header -->
     <div data-role="content" class="content" id="content${pagenum}">
       <!-- <img src="img/foxandgoat1.gif" /> -->
@@ -319,7 +331,7 @@ $(function() {
    <img src="img/16Px-147.png" class="footer-img" /> 
 </a>
 
-<a style="float:right; margin-right:45px;top:5px;" href="#" class="pickColor" data-role="button"> 
+<a style="float:right; margin-right:55px;top:5px;" href="#" class="pickColor" data-role="button"> 
    <img src="img/16Px-216.png" class="footer-img" /> 
 </a>
 
