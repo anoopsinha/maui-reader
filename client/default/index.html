@@ -288,7 +288,11 @@ $(function() {
 
     $(document).delegate('.testButton', 'click', function() {
        alert('hi mom');
-       
+       $fh.act( { act:'helloWorld',
+             secure: false, 
+             req:{ } }, 
+             function(res) { alert(JSON.stringify(res));
+             function(code,errorprops,params) { } ); }
 
     });
 
