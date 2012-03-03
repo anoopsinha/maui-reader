@@ -11,9 +11,8 @@ h1, h2, h3, h4 {
   font-family: Georgia, Times, Times New Roman, serif;
 xs}
 
-p {
-  background-color: #fff;
-  color: #FFF;
+a:link, a:visited, p {
+  color: #EFEFEF;
   font-family: Georgia, Times, Times New Roman, serif;
   text-shadow: none;
   font-size: 15px;
